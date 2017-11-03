@@ -28,15 +28,24 @@
                                 <subviews>
                                     <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="kVu-0J-xlT">
                                         <rect key="frame" x="0.0" y="0.0" width="365" height="30"/>
-                                        <state key="normal" title="Button"/>
+                                        <state key="normal" title="Start"/>
+                                        <connections>
+                                            <action selector="startOnClick:" destination="BYZ-38-t0r" eventType="touchUpInside" id="Gi7-OO-8IL"/>
+                                        </connections>
                                     </button>
                                     <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="5LC-7b-Eil">
                                         <rect key="frame" x="0.0" y="35" width="365" height="30"/>
-                                        <state key="normal" title="Button"/>
+                                        <state key="normal" title="Stop"/>
+                                        <connections>
+                                            <action selector="stopOnClick:" destination="BYZ-38-t0r" eventType="touchUpInside" id="ggD-TP-YfM"/>
+                                        </connections>
                                     </button>
                                     <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Zm2-tj-jQd">
                                         <rect key="frame" x="0.0" y="70" width="365" height="30"/>
-                                        <state key="normal" title="Button"/>
+                                        <state key="normal" title="Wyczyść"/>
+                                        <connections>
+                                            <action selector="clearOnClick:" destination="BYZ-38-t0r" eventType="touchUpInside" id="BAz-kf-KBg"/>
+                                        </connections>
                                     </button>
                                 </subviews>
                                 <constraints>
@@ -48,8 +57,14 @@
                                     <constraint firstItem="kVu-0J-xlT" firstAttribute="leading" secondItem="wR1-Bx-j77" secondAttribute="leading" constant="5" id="sXA-WY-Ahj"/>
                                 </constraints>
                             </stackView>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Adres" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="IG8-bx-Bjn">
+                                <rect key="frame" x="165.5" y="507" width="44.5" height="20.5"/>
+                                <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                <nil key="textColor"/>
+                                <nil key="highlightedColor"/>
+                            </label>
                             <mapView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" mapType="standard" translatesAutoresizingMaskIntoConstraints="NO" id="pV6-0V-i60">
-                                <rect key="frame" x="5" y="70.5" width="365" height="451.5"/>
+                                <rect key="frame" x="5" y="71" width="365" height="421"/>
                             </mapView>
                         </subviews>
                         <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
@@ -58,16 +73,25 @@
                             <constraint firstItem="6Tk-OE-BBY" firstAttribute="trailing" secondItem="wR1-Bx-j77" secondAttribute="trailing" constant="5" id="DcM-Sg-2wk"/>
                             <constraint firstItem="pV6-0V-i60" firstAttribute="centerX" secondItem="8bC-Xf-vdC" secondAttribute="centerX" id="GX2-aj-OMB"/>
                             <constraint firstItem="wR1-Bx-j77" firstAttribute="centerX" secondItem="8bC-Xf-vdC" secondAttribute="centerX" id="JU1-ex-awi"/>
-                            <constraint firstItem="wR1-Bx-j77" firstAttribute="top" secondItem="pV6-0V-i60" secondAttribute="bottom" constant="20" id="UCK-Lg-tIv"/>
                             <constraint firstItem="MkD-Ia-odl" firstAttribute="top" secondItem="6Tk-OE-BBY" secondAttribute="top" constant="10" id="Vib-1g-2lz"/>
+                            <constraint firstItem="wR1-Bx-j77" firstAttribute="top" secondItem="IG8-bx-Bjn" secondAttribute="bottom" constant="15" id="bqe-vo-8Wa"/>
                             <constraint firstItem="6Tk-OE-BBY" firstAttribute="trailing" secondItem="pV6-0V-i60" secondAttribute="trailing" constant="5" id="hZ2-NR-eKm"/>
+                            <constraint firstItem="IG8-bx-Bjn" firstAttribute="top" secondItem="pV6-0V-i60" secondAttribute="bottom" constant="15" id="iw2-eZ-wMx"/>
                             <constraint firstItem="6Tk-OE-BBY" firstAttribute="bottom" secondItem="wR1-Bx-j77" secondAttribute="bottom" constant="25" id="mUq-tF-Y8C"/>
                             <constraint firstItem="pV6-0V-i60" firstAttribute="leading" secondItem="6Tk-OE-BBY" secondAttribute="leading" constant="5" id="oEu-Lb-6bM"/>
                             <constraint firstItem="MkD-Ia-odl" firstAttribute="centerX" secondItem="8bC-Xf-vdC" secondAttribute="centerX" id="sbA-f2-4CT"/>
+                            <constraint firstItem="IG8-bx-Bjn" firstAttribute="centerX" secondItem="8bC-Xf-vdC" secondAttribute="centerX" id="tqA-ct-w9j"/>
                             <constraint firstItem="pV6-0V-i60" firstAttribute="top" secondItem="MkD-Ia-odl" secondAttribute="bottom" constant="20" id="zGm-0S-e51"/>
                         </constraints>
                         <viewLayoutGuide key="safeArea" id="6Tk-OE-BBY"/>
                     </view>
+                    <connections>
+                        <outlet property="adressLabel" destination="IG8-bx-Bjn" id="ndi-Bh-WIH"/>
+                        <outlet property="clearButton" destination="Zm2-tj-jQd" id="9Ti-Hz-M4J"/>
+                        <outlet property="map" destination="pV6-0V-i60" id="0GS-Ab-Pkq"/>
+                        <outlet property="startButton" destination="kVu-0J-xlT" id="bEi-YW-Qtf"/>
+                        <outlet property="stopButton" destination="5LC-7b-Eil" id="aFa-0U-miH"/>
+                    </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="dkx-z0-nzr" sceneMemberID="firstResponder"/>
             </objects>
