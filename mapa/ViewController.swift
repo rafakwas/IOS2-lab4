@@ -19,7 +19,7 @@ class ViewController: UIViewController, CLLocationManagerDelegate {
     @IBOutlet var map: MKMapView!
     let manager = CLLocationManager()
     let geoCoder = CLGeocoder()
-
+    var currentRegionRadius : CLLocationDistance = 0
     override func viewDidLoad() {
         super.viewDidLoad()
         adressLabel.text = ""
@@ -33,8 +33,10 @@ class ViewController: UIViewController, CLLocationManagerDelegate {
     func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
         let location = locations[0]
         let currentLocation : CLLocation = CLLocation(latitude : location.coordinate.latitude, longitude : location.coordinate.longitude)
-        changeZoom(location: currentLocation, speed: location.speed)
-        
+        if(isChangeZoomNecessary(speed : location.speed)) {
+            changeZoom(location: currentLocation, speed: location.speed)
+        }
+        print("Current speed: \(location.speed)")
         addAnnotation(location: currentLocation)
         self.map.userTrackingMode = MKUserTrackingMode.follow
         setAdressLabel(location: currentLocation)
@@ -49,7 +51,6 @@ class ViewController: UIViewController, CLLocationManagerDelegate {
         stopButton.isEnabled = true
         print("rozpoczynanie śledzenia")
         manager.startUpdatingLocation()
-        
     }
     
     @IBAction func stopOnClick(_ sender: Any) {
@@ -65,28 +66,34 @@ class ViewController: UIViewController, CLLocationManagerDelegate {
         map.removeAnnotations(map.annotations)
     }
     
-    func centerMapWithZoomAdjust(location: CLLocation, speed: CLLocationSpeed) {
-        print("current speed: \(speed)")
+    func changeZoom(location: CLLocation, speed: CLLocationSpeed) {
         let regionRadius : CLLocationDistance = getRegionRadius(speed: speed)
         let coordinateRegion = MKCoordinateRegionMakeWithDistance(location.coordinate,regionRadius, regionRadius)
         map.setRegion(coordinateRegion, animated: true)
-        self.map.showsUserLocation = true
     }
     
-    func changeZoom(location: CLLocation, speed: CLLocationSpeed) {
-        
+    func isChangeZoomNecessary(speed: CLLocationSpeed) -> Bool {
+        let newRegionRadius : CLLocationDistance = getRegionRadius(speed: speed)
+        var result : Bool = false
+        if (currentRegionRadius.isEqual(to: newRegionRadius)) {
+            result = false
+        } else {
+            print("Changing zoom is necessary! Speed: \(speed)")
+            print("Current region radius: \(currentRegionRadius) replaced by: \(newRegionRadius)")
+            currentRegionRadius = newRegionRadius
+            result = true
+        }
+        return result
     }
     
     func getRegionRadius(speed: CLLocationSpeed) -> CLLocationDistance {
         var regionRadius : CLLocationDistance;
-        if (speed.isLess(than: 5)) {
+        if (speed.isLess(than: 7)) {
            regionRadius = 1000
-        } else if (speed.isLess(than: 15)) {
+        } else if (speed.isLess(than: 20)) {
            regionRadius = 2000
-        } else if (speed.isLess(than: 30)){
-           regionRadius = 5000
         } else {
-           regionRadius = 20000
+           regionRadius = 10000
         }
         return regionRadius
     }
