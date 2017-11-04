@@ -11,21 +11,34 @@ import UIKit
 import CoreLocation
 import MapKit
 
-class ViewController: UIViewController {
+class ViewController: UIViewController, CLLocationManagerDelegate {
     @IBOutlet var startButton: UIButton!
     @IBOutlet var stopButton: UIButton!
     @IBOutlet var clearButton: UIButton!
     @IBOutlet var adressLabel: UILabel!
     @IBOutlet var map: MKMapView!
     let regionRadius : CLLocationDistance = 1000
+    let manager = CLLocationManager()
+    let geoCoder = CLGeocoder()
 
     override func viewDidLoad() {
         super.viewDidLoad()
         adressLabel.text = ""
         stopButton.isEnabled = false
-        let initialLocation = CLLocation(latitude : 50.0780153, longitude : 19.9197903)
-        centerMap(location: initialLocation)
-        // Do any additional setup after loading the view, typically from a nib.
+        manager.delegate = self
+        manager.desiredAccuracy = kCLLocationAccuracyBest
+        manager.requestWhenInUseAuthorization()
+    }
+    
+    func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
+        let location = locations[0]
+        let currentLocation : CLLocation = CLLocation(latitude : location.coordinate.latitude, longitude : location.coordinate.longitude)
+        
+        addAnnotation(location: currentLocation)
+        centerMapWithZoomAdjust(location: currentLocation, speed: location.speed)
+        setAdressLabel(location: currentLocation)
+        
+        self.map.showsUserLocation = true
     }
     
     override func didReceiveMemoryWarning() {
@@ -36,26 +49,60 @@ class ViewController: UIViewController {
         startButton.isEnabled = false
         stopButton.isEnabled = true
         print("rozpoczynanie śledzenia")
-        let currentLocation = CLLocationCoordinate2D(latitude : 50.0780153, longitude : 19.9197903)
-        let annotation = Annotation(coordinate : currentLocation)
-        map.addAnnotation(annotation)
+        manager.startUpdatingLocation()
+        
     }
     
     @IBAction func stopOnClick(_ sender: Any) {
         stopButton.isEnabled = false
         startButton.isEnabled = true
         print("zatrzymywanie śledzenia")
+        manager.stopUpdatingLocation()
     }
     
     @IBAction func clearOnClick(_ sender: Any) {
         print("czyszczenie znaczników")
+        map.removeAnnotations(map.annotations)
     }
     
-    func centerMap(location: CLLocation) {
+    func centerMapWithZoomAdjust(location: CLLocation, speed: CLLocationSpeed) {
+        print("current speed: \(speed)")
         let coordinateRegion = MKCoordinateRegionMakeWithDistance(location.coordinate,
                                                                   regionRadius, regionRadius)
         map.setRegion(coordinateRegion, animated: true)
     }
-
+    
+    func addAnnotation(location: CLLocation) {
+        let currentLocation = CLLocationCoordinate2D(latitude : location.coordinate.latitude,longitude : location.coordinate.longitude)
+        let annotation = Annotation(coordinate : currentLocation)
+        map.addAnnotation(annotation)
+    }
+    
+    func setAdressLabel(location : CLLocation) {
+        geoCoder.reverseGeocodeLocation(location) {(placemarks,error) -> Void in
+            let array = placemarks as [CLPlacemark]!
+            var placemark : CLPlacemark!
+            placemark = array?[0]
+            var textStringBuilder = ""
+            let delimiter = " "
+            if let postalCode = placemark.postalCode {
+                textStringBuilder.append(postalCode)
+                textStringBuilder.append(delimiter)
+            }
+            if let city = placemark.locality {
+                textStringBuilder.append(city)
+                textStringBuilder.append(delimiter)
+            }
+            if let street = placemark.thoroughfare {
+                textStringBuilder.append(street)
+                textStringBuilder.append(delimiter)
+            }
+            if let number = placemark.subThoroughfare {
+                textStringBuilder.append(number)
+                textStringBuilder.append(delimiter)
+            }
+            self.adressLabel.text = textStringBuilder
+        }
+    }
 }
 
