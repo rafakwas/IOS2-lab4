@@ -17,7 +17,6 @@ class ViewController: UIViewController, CLLocationManagerDelegate {
     @IBOutlet var clearButton: UIButton!
     @IBOutlet var adressLabel: UILabel!
     @IBOutlet var map: MKMapView!
-    let regionRadius : CLLocationDistance = 1000
     let manager = CLLocationManager()
     let geoCoder = CLGeocoder()
 
@@ -27,18 +26,18 @@ class ViewController: UIViewController, CLLocationManagerDelegate {
         stopButton.isEnabled = false
         manager.delegate = self
         manager.desiredAccuracy = kCLLocationAccuracyBest
-        manager.requestWhenInUseAuthorization()
+        manager.requestAlwaysAuthorization()
+        self.map.showsUserLocation = true
     }
     
     func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
         let location = locations[0]
         let currentLocation : CLLocation = CLLocation(latitude : location.coordinate.latitude, longitude : location.coordinate.longitude)
+        changeZoom(location: currentLocation, speed: location.speed)
         
         addAnnotation(location: currentLocation)
-        centerMapWithZoomAdjust(location: currentLocation, speed: location.speed)
+        self.map.userTrackingMode = MKUserTrackingMode.follow
         setAdressLabel(location: currentLocation)
-        
-        self.map.showsUserLocation = true
     }
     
     override func didReceiveMemoryWarning() {
@@ -57,19 +56,39 @@ class ViewController: UIViewController, CLLocationManagerDelegate {
         stopButton.isEnabled = false
         startButton.isEnabled = true
         print("zatrzymywanie śledzenia")
+        self.map.userTrackingMode = MKUserTrackingMode.none
         manager.stopUpdatingLocation()
+        
     }
     
     @IBAction func clearOnClick(_ sender: Any) {
-        print("czyszczenie znaczników")
         map.removeAnnotations(map.annotations)
     }
     
     func centerMapWithZoomAdjust(location: CLLocation, speed: CLLocationSpeed) {
         print("current speed: \(speed)")
-        let coordinateRegion = MKCoordinateRegionMakeWithDistance(location.coordinate,
-                                                                  regionRadius, regionRadius)
+        let regionRadius : CLLocationDistance = getRegionRadius(speed: speed)
+        let coordinateRegion = MKCoordinateRegionMakeWithDistance(location.coordinate,regionRadius, regionRadius)
         map.setRegion(coordinateRegion, animated: true)
+        self.map.showsUserLocation = true
+    }
+    
+    func changeZoom(location: CLLocation, speed: CLLocationSpeed) {
+        
+    }
+    
+    func getRegionRadius(speed: CLLocationSpeed) -> CLLocationDistance {
+        var regionRadius : CLLocationDistance;
+        if (speed.isLess(than: 5)) {
+           regionRadius = 1000
+        } else if (speed.isLess(than: 15)) {
+           regionRadius = 2000
+        } else if (speed.isLess(than: 30)){
+           regionRadius = 5000
+        } else {
+           regionRadius = 20000
+        }
+        return regionRadius
     }
     
     func addAnnotation(location: CLLocation) {

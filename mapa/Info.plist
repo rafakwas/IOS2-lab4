@@ -26,8 +26,8 @@
 	<string>Main</string>
 	<key>NSLocationWhenInUseUsageDescription</key>
 	<string>Do you accept to send your location status to Kwaśnik app?</string>
-	<key>NSLocationAlwaysUsageDescription</key>
-	<string>App needs Location</string>
+	<key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
+	<string>always and in usage</string>
 	<key>LSApplicationCategoryType</key>
 	<string></string>
 	<key>UIRequiredDeviceCapabilities</key>
